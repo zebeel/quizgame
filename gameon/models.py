@@ -8,30 +8,31 @@ class Player(models.Model):
 
 
 class Game(models.Model):
-    game_title = models.TextField
-    game_setting = models.TextField
+    game_title = models.TextField()
+    game_setting = models.TextField()
 
 
 class GameQuestion(models.Model):
-    game_question_id = models.BigIntegerField
-    question = models.TextField
-    true_answer_number = models.IntegerField
-    start_timestamp = models.IntegerField
+    game_question_id = models.BigIntegerField()
+    question = models.TextField()
+    true_answer_number = models.IntegerField()
+    start_timestamp = models.IntegerField()
+    is_surprise = models.BooleanField()
 
 
 class QuestionOption(models.Model):
-    game_question_id = models.BigIntegerField
-    answer_number = models.IntegerField
-    answer_content = models.TextField
+    game_question_id = models.BigIntegerField()
+    answer_number = models.IntegerField()
+    answer_content = models.TextField()
 
 
 class PlayerGame(models.Model):
-    player_id = models.BigIntegerField
-    game_id = models.BigIntegerField
+    player_id = models.BigIntegerField()
+    game_id = models.BigIntegerField()
 
 
 class PlayerAnswer(models.Model):
-    game_id = models.BigIntegerField
-    game_question_id = models.BigIntegerField
-    answer_number = models.IntegerField
-    thinking_time = models.IntegerField
+    game_id = models.BigIntegerField()
+    game_question_id = models.BigIntegerField()
+    answer_number = models.IntegerField()
+    thinking_time = models.IntegerField()

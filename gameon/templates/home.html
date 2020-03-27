@@ -41,7 +41,7 @@
                     <input type="password" id="password" name="password" class="form-control mt-1"
                            placeholder="Password"
                            required="required" value="{{ password }}">
-                    <button class="btn btn-lg btn-warning btn-block mt-1" type="submit">≫≫≫≫≫≫</button>
+                    <button class="btn btn-lg btn-warning btn-block mt-1" type="submit"><i data-feather="arrow-right-circle"></i></button>
                 </form>
             </div>
             <div class="tab-pane fade" id="register-area" role="tabpanel" aria-labelledby="register-tab">
@@ -63,4 +63,9 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+{% block bot-script %}
+    {% if is_registering %}
+        $('#register-tab').click()
+    {% endif %}
 {% endblock %}

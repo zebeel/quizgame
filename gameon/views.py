@@ -30,7 +30,8 @@ def register_user(request):
             'errors': [e],
             'reg_username': username,
             'reg_email': email,
-            'reg_password': password
+            'reg_password': password,
+            'is_registering': True,
         }
         return render(request, 'home.html', data)
     return redirect('/')

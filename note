@@ -1,0 +1,40 @@
+Summary
+	- A realtime app with interaction between host and players
+	- Support many languages
+	- Open source
+	- Support many platform <firstly work with web base>
+
+Table design
+	player
+		id: auto_increment
+		player_name: str(20)
+		secret_string: str(10)
+		mac_add
+	game
+		id
+		game_title
+		game_setting {time_limit, answer_count, point_per_questiton, top_rank_count}
+		secret_code
+		status
+	game_question
+		id
+		game_id
+		question
+		true_answer_number
+		start_timestamp
+		is_surprise
+	question_option
+		id
+		game_question_id
+		answer_number
+		answer_content
+	player_game
+		id
+		player_id
+		game_id
+	player_answer
+		id
+		game_id
+		game_question_id
+		answer_number
+		thinking_time

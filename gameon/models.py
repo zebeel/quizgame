@@ -10,6 +10,8 @@ class Player(models.Model):
 class Game(models.Model):
     game_title = models.TextField()
     game_setting = models.TextField()
+    secret_code = models.CharField(max_length=4)
+    status = models.IntegerField()
 
 
 class GameQuestion(models.Model):

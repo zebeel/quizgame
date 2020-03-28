@@ -2,7 +2,7 @@
 {% block title %}Quiz Game{% endblock %}
 
 {% block content %}
-<div class="home-wrap">
+<div class="master-wrap home-wrap">
     <div class="container">
         {% if errors %}
         <div class="alert alert-danger" role="alert">
@@ -17,8 +17,8 @@
             <a href="{% url 'logout' %}"><span class="badge badge-warning text-center"><i
                     data-feather="log-out"></i></span></a>
         </h3>
-        <span class="badge badge-warning text-center w-100 mb-1"><h4><i
-                data-feather="plus-circle"></i> New Game</h4></span>
+        <a href="{% url 'create-new-game' %}"><span class="badge badge-warning text-center w-100 mb-1"><h4><i
+                data-feather="plus-circle"></i> New Game</h4></span></a>
         <span class="badge badge-warning text-center w-100"><h4><i data-feather="list"></i> Your Game</h4></span>
         {% else %}
         <ul class="nav nav-tabs" id="userTab" role="tablist">

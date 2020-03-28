@@ -103,3 +103,8 @@ def save_new_game(request):
 @login_required(login_url='/')
 def add_question(request):
     return
+
+
+@login_required(login_url='/')
+def save_question(request):
+    return

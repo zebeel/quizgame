@@ -15,7 +15,7 @@ class Game(models.Model):
 
 
 class GameQuestion(models.Model):
-    game_question_id = models.BigIntegerField()
+    game_id = models.BigIntegerField()
     question = models.TextField()
     true_answer_number = models.IntegerField()
     start_timestamp = models.IntegerField()

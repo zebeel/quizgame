@@ -1,19 +1,16 @@
+import random
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
+from gameon.dto import GameSetting
+from gameon.models import Game
+from .const import *
+from .validatior import new_game_validation
 
 
-# @login_required
 def home(request):
-    # user = User.objects.create_user('beel', 'beel@gmail.com', 'beel')
-    # user.save()
-
-    # user = authenticate(request, username='beel', password='beel')
-    # login(request, user)
-    # print(request.user.is_authenticated)
-    # logout(request)
-
     return render(request, 'home.html', {})
 
 
@@ -56,3 +53,53 @@ def login_user(request):
             'password': password
         }
         return render(request, 'home.html', data)
+
+
+@login_required(login_url='/')
+def create_new_game(request):
+    data = {
+        'title_len': GAME_TITLE_MIN_MAX_LEN,
+        'time_limit_option': TIME_LIMIT_OPTION,
+        'answer_count_option': ANSWER_COUNT_OPTION,
+        'point_per_question_option': POINT_PER_QUESTION_OPTION,
+        'top_rank_option': TOP_RANK_OPTION,
+    }
+    return render(request, 'new-game.html', data)
+
+
+@login_required(login_url='/')
+def save_new_game(request):
+    validation = new_game_validation(request)
+    if not validation['ok']:
+        data = {
+            'title_len': GAME_TITLE_MIN_MAX_LEN,
+            'time_limit_option': TIME_LIMIT_OPTION,
+            'answer_count_option': ANSWER_COUNT_OPTION,
+            'point_per_question_option': POINT_PER_QUESTION_OPTION,
+            'top_rank_option': TOP_RANK_OPTION,
+            'errors': validation['errors'],
+        }
+        return render(request, 'new-game.html', data)
+
+    game_title = request.POST['game_title']
+    answer_count = int(request.POST['answer_count'])
+    time_limit = int(request.POST['time_limit'])
+    point_per_question = int(request.POST['point_per_question'])
+    top_rank_count = int(request.POST['top_rank_count'])
+    game_setting = GameSetting(time_limit, answer_count, point_per_question, top_rank_count)
+    setting_json = str(game_setting.__dict__).replace('\'', '\"')
+
+    game = Game()
+    game.game_title = game_title
+    game.game_setting = setting_json
+    game.secret_code = random.randint(1000, 9999)
+    game.status = GAME_CREATED
+
+    game.save()
+
+    return redirect('/')
+
+
+@login_required(login_url='/')
+def add_question(request):
+    return

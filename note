@@ -13,7 +13,7 @@ Table design
 	game
 		id
 		game_title
-		game_setting {time_limit, answer_count, point_per_questiton, top_rank_count}
+		game_setting {time_limit, answer_count, point_per_question, top_rank_count}
 		secret_code
 		status
 	game_question

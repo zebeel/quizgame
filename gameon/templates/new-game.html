@@ -23,7 +23,7 @@
                         <label for="time_limit">Time limit(sec)</label>
                         <select id="time_limit" class="form-control" name="time_limit">
                             {% for tlo in time_limit_option.option %}
-                            <option {% if tlo== time_limit_option.selected %}selected{% endif %}>{{ tlo }}</option>
+                            <option {% if tlo == time_limit_option.selected %}selected{% endif %}>{{ tlo }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -31,7 +31,7 @@
                         <label for="answer_count">Number of answer</label>
                         <select id="answer_count" class="form-control" name="answer_count">
                             {% for aco in answer_count_option.option %}
-                            <option {% if aco== answer_count_option.selected %}selected{% endif %}>{{ aco }}</option>
+                            <option {% if aco == answer_count_option.selected %}selected{% endif %}>{{ aco }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -39,16 +39,16 @@
                         <label for="point_per_question">Point per question</label>
                         <select id="point_per_question" class="form-control" name="point_per_question">
                             {% for ppq in point_per_question_option.option %}
-                            <option {% if ppq== point_per_question_option.selected %}selected{% endif %}>{{ ppq }}
+                            <option {% if ppq == point_per_question_option.selected %}selected{% endif %}>{{ ppq }}
                             </option>
                             {% endfor %}
                         </select>
                     </div>
                     <div class="col">
-                        <label for="top_rank_count">Top rank <i data-feather="help-circle"></i></label>
+                        <label for="top_rank_count">Top rank <span style="cursor: pointer;" data-toggle="tooltip" title="Show top users rank when game finished!"><i data-feather="help-circle"></i></span></label>
                         <select id="top_rank_count" class="form-control" name="top_rank_count">
                             {% for tro in top_rank_option.option %}
-                            <option {% if tro== top_rank_option.selected %}selected{% endif %}>{{ tro }}</option>
+                            <option {% if tro == top_rank_option.selected %}selected{% endif %}>{{ tro }}</option>
                             {% endfor %}
                         </select>
                     </div>

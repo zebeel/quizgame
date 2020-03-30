@@ -25,7 +25,7 @@ Table design
 		is_surprise
 	question_option
 		id
-		game_question_id
+		game_id
 		answer_number
 		answer_content
 	player_game

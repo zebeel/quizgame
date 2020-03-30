@@ -3,6 +3,7 @@ import random
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import F
 from django.shortcuts import render, redirect
 from gameon.dto import GameSetting
 from gameon.models import Game
@@ -94,6 +95,7 @@ def save_new_game(request):
     game.game_setting = setting_json
     game.secret_code = random.randint(1000, 9999)
     game.status = GAME_CREATED
+    game.owner = request.user
 
     game.save()
 
@@ -108,3 +110,15 @@ def add_question(request):
 @login_required(login_url='/')
 def save_question(request):
     return
+
+
+@login_required(login_url='/')
+def your_game(request):
+    games = Game.objects.filter(owner=request.user).order_by(F('id').desc())
+    i = 1
+    for game in games:
+        game.index = i
+        game.status = GAME_STATUS[game.status]
+        i += 1
+
+    return render(request, 'your-game.html', {'games': games})

@@ -12,6 +12,7 @@ class Game(models.Model):
     game_setting = models.TextField()
     secret_code = models.CharField(max_length=4)
     status = models.IntegerField()
+    owner = models.CharField(max_length=150)
 
 
 class GameQuestion(models.Model):

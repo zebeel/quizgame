@@ -17,9 +17,12 @@
             <a href="{% url 'logout' %}"><span class="badge badge-warning text-center"><i
                     data-feather="log-out"></i></span></a>
         </h3>
-        <a href="{% url 'create-new-game' %}"><span class="badge badge-warning text-center w-100 mb-1"><h4><i
-                data-feather="plus-circle"></i> New Game</h4></span></a>
-        <span class="badge badge-warning text-center w-100"><h4><i data-feather="list"></i> Your Game</h4></span>
+        <a href="{% url 'create-new-game' %}">
+            <span class="badge badge-warning text-center w-100 mb-1"><h4><i data-feather="plus-circle"></i> New Game</h4></span>
+        </a>
+        <a href="{% url 'your-game' %}">
+            <span class="badge badge-warning text-center w-100"><h4><i data-feather="list"></i> Your Game</h4></span>
+        </a>
         {% else %}
         <ul class="nav nav-tabs" id="userTab" role="tablist">
             <li class="nav-item w-50">

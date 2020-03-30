@@ -10,4 +10,5 @@ urlpatterns = [
     path('save-new-game', views.save_new_game, name='save-new-game'),
     path('add-question', views.add_question, name='add-question'),
     path('save-question', views.save_question, name='save-question'),
+    path('your-game', views.your_game, name='your-game'),
 ]

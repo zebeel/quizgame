@@ -3,10 +3,13 @@ html, body {
 }
 body {
     background: #007bff;
-    background: linear-gradient(to bottom, #0062E6, #33AEFF);
+    /*background: linear-gradient(to bottom, #0062E6, #33AEFF);*/
     color: white;
 }
-.logo a:hover {
+a {
+    text-decoration: none;
+}
+a:hover {
     text-decoration: none;
 }
 .logo-txt {
@@ -39,6 +42,11 @@ body {
 
 .new-game-wrap{
 	max-width: 1000px;
+}
+
+.game-detail-wrap{
+	max-width: 1000px;
+	height: auto;
 }
 
 #userTab .nav-link{

@@ -24,13 +24,20 @@ body {
     line-height: 60px;
 }
 
-.home-wrap{
+.master-wrap{
 	width: 100%;
 	height: 90%;
-	max-width: 400px;
 	display: flex;
     align-items: center;
     margin: 0 auto;
+}
+
+.home-wrap{
+	max-width: 400px;
+}
+
+.new-game-wrap{
+	max-width: 1000px;
 }
 
 #userTab .nav-link{

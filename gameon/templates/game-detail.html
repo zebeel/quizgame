@@ -18,13 +18,13 @@
                 <input class="form-control form-control-lg" type="text" placeholder="Game Title" id="game_title"
                        name="game_title"
                        minlength="{{ title_len.min}}" maxlength="{{ title_len.max}}" value="{{ game.game_title }}"
-                       {% if game.status > 1 %}disabled{% endif %}>
+                       {{disabled}}>
             </div>
             <div class="form-group">
                 <div class="row">
                     <div class="col">
                         <label for="time_limit">Time limit(sec)</label>
-                        <select id="time_limit" class="form-control" name="time_limit" {% if game.status > 1 %}disabled{% endif %}>
+                        <select id="time_limit" class="form-control" name="time_limit" {{disabled}}>
                             {% for tlo in time_limit_option.option %}
                             <option {% if tlo == setting.time_limit %}selected{% endif %}>{{ tlo }}</option>
                             {% endfor %}
@@ -41,7 +41,7 @@
                     </div>
                     <div class="col">
                         <label for="point_per_question">Point per question</label>
-                        <select id="point_per_question" class="form-control" name="point_per_question" {% if game.status > 1 %}disabled{% endif %}>
+                        <select id="point_per_question" class="form-control" name="point_per_question" {{disabled}}>
                             {% for ppq in point_per_question_option.option %}
                             <option {% if ppq == setting.point_per_question %}selected{% endif %}>{{ ppq }}
                             </option>
@@ -52,7 +52,7 @@
                         <label for="top_rank_count">Top rank <span style="cursor: pointer;" data-toggle="tooltip"
                                                                    title="Show top users rank when game finished!"><i
                                 data-feather="help-circle"></i></span></label>
-                        <select id="top_rank_count" class="form-control" name="top_rank_count" {% if game.status > 1 %}disabled{% endif %}>
+                        <select id="top_rank_count" class="form-control" name="top_rank_count" {{disabled}}>
                             {% for tro in top_rank_option.option %}
                             <option {% if tro == setting.top_rank_count %}selected{% endif %}>{{ tro }}</option>
                             {% endfor %}
@@ -60,38 +60,83 @@
                     </div>
                 </div>
             </div>
-            {% if game.status < 2 %}
+            {% if game.status in EDITABLE_STATUS %}
             <div class="form-group">
                 <button id="save-game" class="btn btn-lg btn-warning btn-block mt-1" type="submit"><i
                         data-feather="save"></i></button>
             </div>
             {% endif %}
         </form>
-        {% if game.status < 2 %}
+        {% if game.status in EDITABLE_STATUS %}
         <div class="form-group">
-            <button id="new-question" class="btn btn-lg btn-warning btn-block mt-1"><i data-feather="plus"></i> New Question</button>
+            <button id="new-question-btn" class="btn btn-lg btn-warning btn-block mt-1"><i data-feather="plus"></i> New Question</button>
         </div>
         {% endif %}
-        <div class="alert alert-light question" style="cursor: pointer;" data-id="1">
-            Question goes here!
+        <div class="question-list">
+            <div class="alert alert-light question" data-id="1">
+                Question goes here!
+            </div>
         </div>
     </div>
-    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
-         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
+    <div class="modal fade" id="new-question-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content new-question-modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                    <h5 class="modal-title">Modal title</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    ...
+                    <form id="save-question-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="question-id">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input" id="bonus-question" name="bonus-question">
+                                        <label class="custom-control-label" for="bonus-question">Is bonus question?</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <input type="text" class="form-control" name="question" id="question" placeholder="Question">
+                                </div>
+                            </div>
+                        </div>
+                        {% for acr in answer_count_range %}
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-1">
+                                    <div class="custom-control custom-switch">
+                                        <input type="radio" class="custom-control-input" id="true-answer-{{acr}}" name="true-answer" value="{{acr}}">
+                                        <label class="custom-control-label" for="true-answer-{{acr}}">&nbsp</label>
+                                    </div>
+                                </div>
+                                <div class="col-11"><input type="text" class="form-control" name="answer-{{acr}}" id="answer-{{acr}}" placeholder="Answer {{acr}}"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="alert alert-warning" role="alert">
+                                        <span>Note: Check the true answer!</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    {% if game.status in EDITABLE_STATUS %}
+                    <button type="button" class="btn btn-secondary" id="save-question-btn">Save changes</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -99,7 +144,7 @@
 </div>
 {% endblock %}
 {% block bot-script %}
-{% if game.status < 2 %}
+{% if game.status in EDITABLE_STATUS %}
 <!--Hide save button when page loaded-->
 $('#save-game').hide()
 <!--Show save button when any field of game form changed-->
@@ -138,11 +183,30 @@ $('#save-game-form').submit(function(e) {
     $('#save-game').hide()
     $('#new-question').show()
 })
+<!-- Action when save question -->
+$('#save-question-btn').click(function() {
+    let data = $('#save-question-form').serialize()
+    data = data + '&game_id=' + $('#game_id').val()
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'save-question' %}",
+        data: data,
+        dataType: 'json',
+        success: function (data) {
+            if (data.error) {
+                <!--Error goes here-->
+            }
+        },
+    });
+})
 {% endif %}
 
-<!--Action when click question-->
+<!--Action when click question or new question btn-->
+$('#new-question-btn').click(function() {
+    $('#new-question-modal').modal('show')
+})
 $('.question').click(function() {
     console.log($(this).data('id'))
-    $('#exampleModalCenter').modal()
+    $('#new-question-modal').modal()
 })
 {% endblock %}

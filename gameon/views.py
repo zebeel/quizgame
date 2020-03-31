@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect
 from gameon.dto import GameSetting, load_setting
 from gameon.models import Game
 from .const import *
-from .validatior import new_game_validation
+from .validatior import new_game_validation, save_question_validation
 
 
 def home(request):
@@ -112,8 +112,7 @@ def save_game(request):
     game_id = request.POST['game_id']
 
     game = Game.objects.get(id=game_id, owner=request.user)
-    editable_status = [GAME_CREATED, GAME_READY]
-    if game.status not in editable_status:
+    if game.status not in EDITABLE_STATUS:
         return JsonResponse({'error': 'Something went wrong!'})
 
     setting = load_setting(game.game_setting)
@@ -135,13 +134,11 @@ def save_game(request):
 
 
 @login_required(login_url='/')
-def add_question(request):
-    return
-
-
-@login_required(login_url='/')
-def edit_question(request):
-    return
+def save_question(request):
+    print(request.POST)
+    validator = save_question_validation(request)
+    print(validator['errors'])
+    return JsonResponse({})
 
 
 @login_required(login_url='/')
@@ -160,6 +157,9 @@ def your_game(request):
 def game_detail(request, game_id):
     game = Game.objects.get(id=game_id, owner=request.user)
     setting = load_setting(game.game_setting)
+    disabled = 'disabled'
+    if game.status in EDITABLE_STATUS:
+        disabled = ''
     data = {
         'title_len': GAME_TITLE_MIN_MAX_LEN,
         'time_limit_option': TIME_LIMIT_OPTION,
@@ -167,7 +167,10 @@ def game_detail(request, game_id):
         'point_per_question_option': POINT_PER_QUESTION_OPTION,
         'top_rank_option': TOP_RANK_OPTION,
         'game': game,
-        'setting': setting
+        'setting': setting,
+        'answer_count_range': range(1, setting.answer_count+1),
+        'disabled': disabled,
+        'EDITABLE_STATUS': EDITABLE_STATUS,
     }
 
     return render(request, 'game-detail.html', data)

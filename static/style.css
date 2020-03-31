@@ -56,3 +56,11 @@ a:hover {
 #userTab .nav-link.active{
     background-color: #fff;
 }
+
+.new-question-modal-content {
+    background-color: #212529c7;
+}
+
+.question {
+    cursor: pointer;
+}

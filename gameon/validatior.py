@@ -1,4 +1,6 @@
 from gameon.const import *
+from gameon.dto import load_setting
+from gameon.models import Game
 
 
 def new_game_validation(request):
@@ -25,5 +27,36 @@ def new_game_validation(request):
     if top_rank_count not in TOP_RANK_OPTION['option']:
         err.append('Top rank is out of scope')
         ret = False
+
+    return {'ok': ret, 'errors': err}
+
+
+def save_question_validation(request):
+    ret = True
+    err = []
+
+    game_id = request.POST['game_id']
+    game = Game.objects.get(id=game_id, owner=request.user)
+    if game is None:
+        ret = False
+        return {'ok': ret, 'errors': 'You don\'t have permission'}
+
+    setting = load_setting(game.game_setting)
+
+    question = request.POST.get('question', '')
+    if len(question) < 1:
+        ret = False
+        err.append('Question is empty')
+
+    for i in range(1, setting.answer_count+1):
+        answer = request.POST.get('answer-' + str(i), '')
+        if len(answer) < 1:
+            ret = False
+            err.append('Answer ' + str(i) + ' is empty')
+
+    true_answer = request.POST.get('true-answer', False)
+    if not true_answer:
+        ret = False
+        err.append('Check a true answer')
 
     return {'ok': ret, 'errors': err}

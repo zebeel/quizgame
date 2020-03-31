@@ -15,14 +15,16 @@
             {% csrf_token %}
             <input type="hidden" id="game_id" name="game_id" value="{{ game.id }}">
             <div class="form-group">
-                <input class="form-control form-control-lg" type="text" placeholder="Game Title" id="game_title" name="game_title"
-                       minlength="{{ title_len.min}}" maxlength="{{ title_len.max}}" value="{{ game.game_title }}">
+                <input class="form-control form-control-lg" type="text" placeholder="Game Title" id="game_title"
+                       name="game_title"
+                       minlength="{{ title_len.min}}" maxlength="{{ title_len.max}}" value="{{ game.game_title }}"
+                       {% if game.status > 1 %}disabled{% endif %}>
             </div>
             <div class="form-group">
                 <div class="row">
                     <div class="col">
                         <label for="time_limit">Time limit(sec)</label>
-                        <select id="time_limit" class="form-control" name="time_limit">
+                        <select id="time_limit" class="form-control" name="time_limit" {% if game.status > 1 %}disabled{% endif %}>
                             {% for tlo in time_limit_option.option %}
                             <option {% if tlo == setting.time_limit %}selected{% endif %}>{{ tlo }}</option>
                             {% endfor %}
@@ -39,7 +41,7 @@
                     </div>
                     <div class="col">
                         <label for="point_per_question">Point per question</label>
-                        <select id="point_per_question" class="form-control" name="point_per_question">
+                        <select id="point_per_question" class="form-control" name="point_per_question" {% if game.status > 1 %}disabled{% endif %}>
                             {% for ppq in point_per_question_option.option %}
                             <option {% if ppq == setting.point_per_question %}selected{% endif %}>{{ ppq }}
                             </option>
@@ -47,8 +49,10 @@
                         </select>
                     </div>
                     <div class="col">
-                        <label for="top_rank_count">Top rank <span style="cursor: pointer;" data-toggle="tooltip" title="Show top users rank when game finished!"><i data-feather="help-circle"></i></span></label>
-                        <select id="top_rank_count" class="form-control" name="top_rank_count">
+                        <label for="top_rank_count">Top rank <span style="cursor: pointer;" data-toggle="tooltip"
+                                                                   title="Show top users rank when game finished!"><i
+                                data-feather="help-circle"></i></span></label>
+                        <select id="top_rank_count" class="form-control" name="top_rank_count" {% if game.status > 1 %}disabled{% endif %}>
                             {% for tro in top_rank_option.option %}
                             <option {% if tro == setting.top_rank_count %}selected{% endif %}>{{ tro }}</option>
                             {% endfor %}
@@ -56,10 +60,12 @@
                     </div>
                 </div>
             </div>
+            {% if game.status < 2 %}
             <div class="form-group">
                 <button id="save-game" class="btn btn-lg btn-warning btn-block mt-1" type="submit"><i
                         data-feather="save"></i></button>
             </div>
+            {% endif %}
         </form>
         {% if game.status < 2 %}
         <div class="form-group">
@@ -93,7 +99,7 @@
 </div>
 {% endblock %}
 {% block bot-script %}
-$('#exampleModalCenter').modal()
+{% if game.status < 2 %}
 <!--Hide save button when page loaded-->
 $('#save-game').hide()
 <!--Show save button when any field of game form changed-->
@@ -132,8 +138,11 @@ $('#save-game-form').submit(function(e) {
     $('#save-game').hide()
     $('#new-question').show()
 })
+{% endif %}
+
 <!--Action when click question-->
 $('.question').click(function() {
     console.log($(this).data('id'))
+    $('#exampleModalCenter').modal()
 })
 {% endblock %}

@@ -17,6 +17,7 @@
                     <th>#</th>
                     <th>Game Title</th>
                     <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -25,6 +26,14 @@
                     <td>{{ game.index }}</td>
                     <td><a href="{% url 'game-detail' game_id=game.id %}">{{ game.game_title }}</a></td>
                     <td>{{ game.status}}</td>
+                    <td>
+                        {% if 'Playing' == game.status or game.status == 'Ready to play' %}
+                        <button type="button" class="play-btn btn btn-sm btn-outline-dark" data-id="{{ game.id }}"><i data-feather="play"></i></button>
+                        {% else %}
+                        <button type="button" class="btn btn-sm btn-outline-dark" disabled><i data-feather="play"></i></button>
+                        {% endif %}
+                        <button type="button" class="delete-btn btn btn-sm btn-outline-dark" data-id="{{ game.id }}"><i data-feather="trash-2"></i></button>
+                    </td>
                 </tr>
 
                 {% endfor %}
@@ -34,6 +43,7 @@
                     <th>#</th>
                     <th>Game Title</th>
                     <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </tfoot>
         </table>
@@ -44,4 +54,10 @@
 $(document).ready(function() {
     $('#example').DataTable();
 } );
+$('.play-btn').click(function() {
+    console.log($(this).data('id'))
+})
+$('.delete-btn').click(function() {
+    console.log($(this).data('id'))
+})
 {% endblock %}

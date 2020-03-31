@@ -110,13 +110,18 @@ def save_game(request):
         return JsonResponse({'error': 'Something went wrong!'})
 
     game_id = request.POST['game_id']
+
+    game = Game.objects.get(id=game_id, owner=request.user)
+    editable_status = [GAME_CREATED, GAME_READY]
+    if game.status not in editable_status:
+        return JsonResponse({'error': 'Something went wrong!'})
+
+    setting = load_setting(game.game_setting)
+
     game_title = request.POST['game_title']
     time_limit = int(request.POST['time_limit'])
     point_per_question = int(request.POST['point_per_question'])
     top_rank_count = int(request.POST['top_rank_count'])
-
-    game = Game.objects.get(id=game_id, owner=request.user)
-    setting = load_setting(game.game_setting)
 
     game_setting = GameSetting(time_limit, setting.answer_count, point_per_question, top_rank_count)
     setting_json = str(game_setting.__dict__).replace('\'', '\"')
@@ -153,7 +158,7 @@ def your_game(request):
 
 @login_required(login_url='/')
 def game_detail(request, game_id):
-    game = Game.objects.get(id=game_id)
+    game = Game.objects.get(id=game_id, owner=request.user)
     setting = load_setting(game.game_setting)
     data = {
         'title_len': GAME_TITLE_MIN_MAX_LEN,

@@ -7,7 +7,7 @@ from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from gameon.dto import GameSetting, load_setting
-from gameon.models import Game
+from gameon.models import Game, GameQuestion, QuestionOption
 from .const import *
 from .validatior import new_game_validation, save_question_validation
 
@@ -105,10 +105,37 @@ def save_new_game(request):
 
 @login_required(login_url='/')
 def save_question(request):
-    print(request.POST)
     validator = save_question_validation(request)
-    print(validator['errors'])
-    return JsonResponse({})
+    if not validator['ok']:
+        return JsonResponse({'errors': validator['errors']})
+
+    game_id = request.POST['game_id']
+
+    game = Game.objects.get(id=game_id, owner=request.user)
+
+    if game is None:
+        return JsonResponse({'errors': ['No permission for this game']})
+
+    if game.status not in EDITABLE_STATUS:
+        return JsonResponse({'errors': ['Something went wrong!']})
+
+    question = GameQuestion()
+    question.game_id = game_id
+    question.question = request.POST.get('question', '')
+    question.true_answer_number = request.POST.get('true-answer', False)
+    question.is_surprise = request.POST.get('bonus-question', False) is not False
+    question.save()
+
+    setting = load_setting(game.game_setting)
+    for i in range(1, setting.answer_count+1):
+        answer = request.POST.get('answer-' + str(i), '')
+        question_option = QuestionOption()
+        question_option.game_question_id = question.id
+        question_option.answer_number = i
+        question_option.answer_content = answer
+        question_option.save()
+
+    return JsonResponse({'id': question.id})
 
 
 @login_required(login_url='/')
@@ -125,14 +152,22 @@ def your_game(request):
 
 @login_required(login_url='/')
 def game_detail(request, game_id):
+    game = Game.objects.get(id=game_id, owner=request.user)
+    if game is None:
+        return redirect('/')
+
     err = []
     if request.method == 'POST':
         err = save_game(request)
-    game = Game.objects.get(id=game_id, owner=request.user)
+
     setting = load_setting(game.game_setting)
+
     disabled = 'disabled'
     if game.status in EDITABLE_STATUS:
         disabled = ''
+
+    questions = GameQuestion.objects.filter(game_id=game_id)
+
     data = {
         'title_len': GAME_TITLE_MIN_MAX_LEN,
         'time_limit_option': TIME_LIMIT_OPTION,
@@ -141,10 +176,11 @@ def game_detail(request, game_id):
         'top_rank_option': TOP_RANK_OPTION,
         'game': game,
         'setting': setting,
-        'answer_count_range': range(1, setting.answer_count+1),
+        'answer_count_range': range(1, setting.answer_count + 1),
         'disabled': disabled,
         'EDITABLE_STATUS': EDITABLE_STATUS,
         'errors': err,
+        'questions': questions,
     }
 
     return render(request, 'game-detail.html', data)

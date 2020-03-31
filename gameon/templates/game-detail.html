@@ -75,9 +75,11 @@
         </div>
         {% endif %}
         <div class="question-list">
-            <div class="alert alert-light question" data-id="1">
-                Question goes here!
+            {% for question in questions %}
+            <div class="alert alert-light question" data-id="{{question.id}}">
+                <span>{{question.question}}</span>
             </div>
+            {% endfor %}
         </div>
     </div>
     <div class="modal fade" id="new-question-modal" tabindex="-1" role="dialog">
@@ -90,6 +92,10 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div class="err-area err-area-modal">
+                        <div class="alert alert-danger modal-err" role="alert">
+                        </div>
+                    </div>
                     <form id="save-question-form">
                         {% csrf_token %}
                         <input type="hidden" name="question-id">
@@ -106,7 +112,7 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col">
-                                    <input type="text" class="form-control" name="question" id="question" placeholder="Question">
+                                    <input type="text" class="form-control modal-input-text" name="question" id="question" placeholder="Question">
                                 </div>
                             </div>
                         </div>
@@ -119,7 +125,7 @@
                                         <label class="custom-control-label" for="true-answer-{{acr}}">&nbsp</label>
                                     </div>
                                 </div>
-                                <div class="col-11"><input type="text" class="form-control" name="answer-{{acr}}" id="answer-{{acr}}" placeholder="Answer {{acr}}"></div>
+                                <div class="col-11"><input type="text" class="form-control modal-input-text" name="answer-{{acr}}" id="answer-{{acr}}" placeholder="Answer {{acr}}"></div>
                             </div>
                         </div>
                         {% endfor %}
@@ -176,20 +182,43 @@ $('#save-question-btn').click(function() {
         data: data,
         dataType: 'json',
         success: function (data) {
-            if (data.error) {
-                <!--Error goes here-->
+            if (data.errors) {
+                $('.modal-err').html('')
+                html = ''
+                for(let i=0; i<data.errors.length; i++){
+                    html += '<li>'+data.errors[i]+'</li>'
+                }
+                $('.modal-err').html(html)
+                $('.err-area-modal').show()
+            } else {
+                html = '<div class="alert alert-light question" data-id="'+data.id+'"><span>'+$('#question').val()+'</span></div>'
+                $('.question-list').append(html)
+                $('#new-question-modal').modal('hide')
             }
         },
     });
 })
-{% endif %}
 
-<!--Action when click question or new question btn-->
+<!--Action when new question btn-->
 $('#new-question-btn').click(function() {
+    $('.modal-title').text('Add a new question')
+    $('.modal-input-text').val('')
+    $('#bonus-question').prop('checked', false)
+    $('.err-area-modal').hide()
     $('#new-question-modal').modal('show')
 })
-$('.question').click(function() {
+<!-- hide modal err -->
+$('.err-area-modal').click(function() {
+    $(this).hide()
+})
+
+{% endif %}
+
+<!--Action when click question-->
+$('.question-list').on('click', '.question', function() {
     console.log($(this).data('id'))
+    $('.modal-title').text('Edit question')
+    $('.err-area-modal').hide()
     $('#new-question-modal').modal()
 })
 {% endblock %}

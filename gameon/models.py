@@ -19,7 +19,7 @@ class GameQuestion(models.Model):
     game_id = models.BigIntegerField()
     question = models.TextField()
     true_answer_number = models.IntegerField()
-    start_timestamp = models.IntegerField()
+    start_timestamp = models.IntegerField(null=True)
     is_surprise = models.BooleanField()
 
 

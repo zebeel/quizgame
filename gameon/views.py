@@ -104,36 +104,6 @@ def save_new_game(request):
 
 
 @login_required(login_url='/')
-def save_game(request):
-    validation = new_game_validation(request)
-    if not validation['ok']:
-        return JsonResponse({'error': 'Something went wrong!'})
-
-    game_id = request.POST['game_id']
-
-    game = Game.objects.get(id=game_id, owner=request.user)
-    if game.status not in EDITABLE_STATUS:
-        return JsonResponse({'error': 'Something went wrong!'})
-
-    setting = load_setting(game.game_setting)
-
-    game_title = request.POST['game_title']
-    time_limit = int(request.POST['time_limit'])
-    point_per_question = int(request.POST['point_per_question'])
-    top_rank_count = int(request.POST['top_rank_count'])
-
-    game_setting = GameSetting(time_limit, setting.answer_count, point_per_question, top_rank_count)
-    setting_json = str(game_setting.__dict__).replace('\'', '\"')
-
-    game.game_title = game_title
-    game.game_setting = setting_json
-
-    game.save()
-
-    return JsonResponse({})
-
-
-@login_required(login_url='/')
 def save_question(request):
     print(request.POST)
     validator = save_question_validation(request)
@@ -155,6 +125,9 @@ def your_game(request):
 
 @login_required(login_url='/')
 def game_detail(request, game_id):
+    err = []
+    if request.method == 'POST':
+        err = save_game(request)
     game = Game.objects.get(id=game_id, owner=request.user)
     setting = load_setting(game.game_setting)
     disabled = 'disabled'
@@ -171,6 +144,36 @@ def game_detail(request, game_id):
         'answer_count_range': range(1, setting.answer_count+1),
         'disabled': disabled,
         'EDITABLE_STATUS': EDITABLE_STATUS,
+        'errors': err,
     }
 
     return render(request, 'game-detail.html', data)
+
+
+def save_game(request):
+    validation = new_game_validation(request)
+    if not validation['ok']:
+        return validation['errors']
+
+    game_id = request.POST['game_id']
+
+    game = Game.objects.get(id=game_id, owner=request.user)
+    if game.status not in EDITABLE_STATUS:
+        return ['Something went wrong!']
+
+    setting = load_setting(game.game_setting)
+
+    game_title = request.POST['game_title']
+    time_limit = int(request.POST['time_limit'])
+    point_per_question = int(request.POST['point_per_question'])
+    top_rank_count = int(request.POST['top_rank_count'])
+
+    game_setting = GameSetting(time_limit, setting.answer_count, point_per_question, top_rank_count)
+    setting_json = str(game_setting.__dict__).replace('\'', '\"')
+
+    game.game_title = game_title
+    game.game_setting = setting_json
+
+    game.save()
+
+    return []

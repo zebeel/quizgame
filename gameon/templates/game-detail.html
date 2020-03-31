@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="master-wrap game-detail-wrap">
-    <div class="container" style="height: 100%">
+    <div class="container mb-2">
         {% if errors %}
         <div class="alert alert-danger" role="alert">
             {% for error in errors %}
@@ -29,8 +29,9 @@
                         </select>
                     </div>
                     <div class="col">
+                        <input type="hidden" name="answer_count" value="{{ setting.answer_count }}">
                         <label for="answer_count">Number of answer</label>
-                        <select id="answer_count" class="form-control" name="answer_count">
+                        <select id="answer_count" class="form-control" disabled>
                             {% for aco in answer_count_option.option %}
                             <option {% if aco == setting.answer_count %}selected{% endif %}>{{ aco }}</option>
                             {% endfor %}
@@ -69,9 +70,30 @@
             Question goes here!
         </div>
     </div>
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 {% block bot-script %}
+$('#exampleModalCenter').modal()
 <!--Hide save button when page loaded-->
 $('#save-game').hide()
 <!--Show save button when any field of game form changed-->
@@ -80,10 +102,6 @@ $('#game_title').change(function() {
     $('#new-question').hide()
 })
 $('#time_limit').change(function() {
-    $('#save-game').show()
-    $('#new-question').hide()
-})
-$('#answer_count').change(function() {
     $('#save-game').show()
     $('#new-question').hide()
 })

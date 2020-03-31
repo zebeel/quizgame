@@ -111,14 +111,16 @@ def save_game(request):
 
     game_id = request.POST['game_id']
     game_title = request.POST['game_title']
-    answer_count = int(request.POST['answer_count'])
     time_limit = int(request.POST['time_limit'])
     point_per_question = int(request.POST['point_per_question'])
     top_rank_count = int(request.POST['top_rank_count'])
-    game_setting = GameSetting(time_limit, answer_count, point_per_question, top_rank_count)
-    setting_json = str(game_setting.__dict__).replace('\'', '\"')
 
     game = Game.objects.get(id=game_id, owner=request.user)
+    setting = load_setting(game.game_setting)
+
+    game_setting = GameSetting(time_limit, setting.answer_count, point_per_question, top_rank_count)
+    setting_json = str(game_setting.__dict__).replace('\'', '\"')
+
     game.game_title = game_title
     game.game_setting = setting_json
 

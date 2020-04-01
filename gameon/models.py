@@ -20,11 +20,11 @@ class GameQuestion(models.Model):
     question = models.TextField()
     true_answer_number = models.IntegerField()
     start_timestamp = models.IntegerField(null=True)
-    is_surprise = models.BooleanField()
+    is_bonus = models.BooleanField()
 
 
 class QuestionOption(models.Model):
-    game_question_id = models.BigIntegerField()
+    question_id = models.BigIntegerField()
     answer_number = models.IntegerField()
     answer_content = models.TextField()
 

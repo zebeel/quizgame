@@ -76,7 +76,7 @@
         {% endif %}
         <div class="question-list">
             {% for question in questions %}
-            <div class="alert alert-light question" data-id="{{question.id}}">
+            <div class="alert alert-light question question-{{question.id}}" data-id="{{question.id}}">
                 <span>{{question.question}}</span>
             </div>
             {% endfor %}
@@ -98,7 +98,7 @@
                     </div>
                     <form id="save-question-form">
                         {% csrf_token %}
-                        <input type="hidden" name="question-id">
+                        <input type="hidden" name="question-id" id="question-id">
                         <div class="form-group">
                             <div class="row">
                                 <div class="col">
@@ -143,7 +143,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     {% if game.status in EDITABLE_STATUS %}
-                    <button type="button" class="btn btn-secondary" id="save-question-btn">Save changes</button>
+                    <button type="button" class="btn btn-secondary" id="save-question-btn">Save Question</button>
                     {% endif %}
                 </div>
             </div>
@@ -185,14 +185,18 @@ $('#save-question-btn').click(function() {
             if (data.errors) {
                 $('.modal-err').html('')
                 html = ''
-                for(let i=0; i<data.errors.length; i++){
+                for(let i=0; i < data.errors.length; i++){
                     html += '<li>'+data.errors[i]+'</li>'
                 }
                 $('.modal-err').html(html)
                 $('.err-area-modal').show()
             } else {
-                html = '<div class="alert alert-light question" data-id="'+data.id+'"><span>'+$('#question').val()+'</span></div>'
-                $('.question-list').append(html)
+                if($('#question-id').val() > 0){
+                    $(".question-"+data.id).html('<span>'+$('#question').val()+'</span>')
+                } else {
+                    html = '<div class="alert alert-light question question-'+data.id+'" data-id="'+data.id+'"><span>'+$('#question').val()+'</span></div>'
+                    $('.question-list').append(html)
+                }
                 $('#new-question-modal').modal('hide')
             }
         },
@@ -205,6 +209,7 @@ $('#new-question-btn').click(function() {
     $('.modal-input-text').val('')
     $('#bonus-question').prop('checked', false)
     $('.err-area-modal').hide()
+    $('#question-id').val(0)
     $('#new-question-modal').modal('show')
 })
 <!-- hide modal err -->
@@ -216,9 +221,26 @@ $('.err-area-modal').click(function() {
 
 <!--Action when click question-->
 $('.question-list').on('click', '.question', function() {
-    console.log($(this).data('id'))
+    var question_id = $(this).data('id')
+    $('#question-id').val(question_id)
+    var game_id = $('#game_id').val()
     $('.modal-title').text('Edit question')
     $('.err-area-modal').hide()
-    $('#new-question-modal').modal()
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'get-question' %}",
+        data: {'csrfmiddlewaretoken': $("input[name*='csrfmiddlewaretoken']").val(), 'question_id': question_id, 'game_id': game_id},
+        dataType: 'json',
+        success: function (data) {
+            console.log(data)
+            $('#question').val(data.question)
+            $('#true-answer-'+data.true_answer).prop('checked', true)
+            $('#bonus-question').prop('checked', data.is_bonus)
+            for(let i=0; i<data.answers.length; i++){
+                $('#answer-'+data.answers[i].fields.answer_number).val(data.answers[i].fields.answer_content)
+            }
+            $('#new-question-modal').modal()
+        },
+    });
 })
 {% endblock %}

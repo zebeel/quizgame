@@ -3,6 +3,7 @@ import random
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core import serializers
 from django.db.models import F
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -120,20 +121,30 @@ def save_question(request):
         return JsonResponse({'errors': ['Something went wrong!']})
 
     question = GameQuestion()
+    question_id = request.POST.get('question-id', 0)
+    if int(question_id) > 0:
+        question = GameQuestion.objects.get(id=question_id, game_id=game_id)
+        if question is None:
+            return JsonResponse({'errors': ['No permission for this question']})
     question.game_id = game_id
     question.question = request.POST.get('question', '')
     question.true_answer_number = request.POST.get('true-answer', False)
-    question.is_surprise = request.POST.get('bonus-question', False) is not False
+    question.is_bonus = request.POST.get('bonus-question', False) is not False
     question.save()
 
     setting = load_setting(game.game_setting)
     for i in range(1, setting.answer_count+1):
         answer = request.POST.get('answer-' + str(i), '')
         question_option = QuestionOption()
-        question_option.game_question_id = question.id
+        if int(question_id) > 0:
+            question_option = QuestionOption.objects.get(question_id=question_id, answer_number=i)
+        question_option.question_id = question.id
         question_option.answer_number = i
         question_option.answer_content = answer
         question_option.save()
+
+    game.status = GAME_READY
+    game.save()
 
     return JsonResponse({'id': question.id})
 
@@ -213,3 +224,27 @@ def save_game(request):
     game.save()
 
     return []
+
+
+def get_question(request):
+    game_id = request.POST['game_id']
+    question_id = request.POST['question_id']
+    game = Game.objects.get(id=game_id, owner=request.user)
+    if game is None:
+        return JsonResponse({'errors': ['No permission for this game']})
+
+    question = GameQuestion.objects.get(game_id=game_id, pk=question_id)
+
+    if question is None:
+        return JsonResponse({'errors': ['No question exists']})
+
+    answers = QuestionOption.objects.filter(question_id=question_id)
+
+    data = {
+        'question': question.question,
+        'true_answer': question.true_answer_number,
+        'is_bonus': question.is_bonus,
+        'answers': serializers.serialize('python', answers),
+    }
+
+    return JsonResponse(data)

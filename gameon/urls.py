@@ -10,6 +10,7 @@ urlpatterns = [
     path('save-new-game', views.save_new_game, name='save-new-game'),
     # path('save-game', views.save_game, name='save-game'),
     path('save-question', views.save_question, name='save-question'),
+    path('get-question', views.get_question, name='get-question'),
     path('your-game', views.your_game, name='your-game'),
     path('game-detail/<int:game_id>', views.game_detail, name='game-detail'),
 ]

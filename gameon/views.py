@@ -177,7 +177,7 @@ def game_detail(request, game_id):
     if game.status in EDITABLE_STATUS:
         disabled = ''
 
-    questions = GameQuestion.objects.filter(game_id=game_id)
+    questions = GameQuestion.objects.filter(game_id=game_id).order_by('id')
 
     data = {
         'title_len': GAME_TITLE_MIN_MAX_LEN,

@@ -103,7 +103,7 @@
                             <div class="row">
                                 <div class="col">
                                     <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="bonus-question" name="bonus-question">
+                                        <input type="checkbox" class="custom-control-input" id="bonus-question" name="bonus-question" {{disabled}}>
                                         <label class="custom-control-label" for="bonus-question">Is bonus question?</label>
                                     </div>
                                 </div>
@@ -112,7 +112,7 @@
                         <div class="form-group">
                             <div class="row">
                                 <div class="col">
-                                    <input type="text" class="form-control modal-input-text" name="question" id="question" placeholder="Question">
+                                    <input type="text" class="form-control modal-input-text" name="question" id="question" placeholder="Question" {{disabled}}>
                                 </div>
                             </div>
                         </div>
@@ -121,23 +121,25 @@
                             <div class="row">
                                 <div class="col-1">
                                     <div class="custom-control custom-switch">
-                                        <input type="radio" class="custom-control-input" id="true-answer-{{acr}}" name="true-answer" value="{{acr}}">
+                                        <input type="radio" class="custom-control-input" id="true-answer-{{acr}}" name="true-answer" value="{{acr}}" {{disabled}}>
                                         <label class="custom-control-label" for="true-answer-{{acr}}">&nbsp</label>
                                     </div>
                                 </div>
-                                <div class="col-11"><input type="text" class="form-control modal-input-text" name="answer-{{acr}}" id="answer-{{acr}}" placeholder="Answer {{acr}}"></div>
+                                <div class="col-11"><input type="text" class="form-control modal-input-text" name="answer-{{acr}}" id="answer-{{acr}}" placeholder="Answer {{acr}}" {{disabled}}></div>
                             </div>
                         </div>
                         {% endfor %}
+                        {% if game.status in EDITABLE_STATUS %}
                         <div class="form-group">
                             <div class="row">
                                 <div class="col">
                                     <div class="alert alert-warning" role="alert">
-                                        <span>Note: Check the true answer!</span>
+                                        <span>Note: Remember to pick one true answer!</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        {% endif %}
                     </form>
                 </div>
                 <div class="modal-footer">

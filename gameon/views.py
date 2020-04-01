@@ -101,7 +101,7 @@ def save_new_game(request):
 
     game.save()
 
-    return redirect('/')
+    return redirect('game-detail', game_id=game.id)
 
 
 @login_required(login_url='/')

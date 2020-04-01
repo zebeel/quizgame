@@ -11,8 +11,8 @@
                 <li>{{ error }}</li>
                 {% endfor %}
             </div>
+            {% endif %}
         </div>
-        {% endif %}
         <form method="post" action="{% url 'save-new-game' %}">
             {% csrf_token %}
             <div class="form-group">

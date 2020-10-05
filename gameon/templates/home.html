@@ -11,8 +11,8 @@
                 <li>{{ error }}</li>
                 {% endfor %}
             </div>
+            {% endif %}
         </div>
-        {% endif %}
         {% if user.is_authenticated %}
         <h3 class="text-center">
             Hi, {{ user }}
